@@ -23,7 +23,7 @@ bot.on('message', msg => {
 	if(sender.bot) return;
 
 	if (input.startsWith(prefix + 'rename')) {				
-		input = input.replace(prefix + 'rename ', ''); //trim away command
+		input = input.replace(prefix + 'rename', '').trim(); //trim away command
 
 		let quotePattern = /".*?"/,
 		validCharacterPattern = /^[a-zA-Z0-9_-]+$/;
@@ -44,6 +44,8 @@ bot.on('message', msg => {
 					else if (match.type === 'text' && !validCharacterPattern.test(name))
 						channel.sendMessage(
 							'Text channel names must be alphanumeric with dashes or underscores.');
+					else if (name === query)
+						channel.sendMessage('Channel name is already ' + name + "!");
 					else {
 						match.setName(name);
 						channel.sendMessage(
