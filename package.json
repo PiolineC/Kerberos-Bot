@@ -1,0 +1,15 @@
+{
+  "name": "kerberos-bot",
+  "version": "0.1.0",
+  "description": "discord.js based bot",
+  "main": "index.js",
+  "dependencies": {
+    "discord.js": "^10.0.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Pioline",
+  "license": "ISC"
+}
