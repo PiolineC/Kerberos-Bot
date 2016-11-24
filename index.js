@@ -45,7 +45,7 @@ bot.on('message', msg => {
 						channel.sendMessage(
 							'Text channel names must be alphanumeric with dashes or underscores.');
 					else if (name === query)
-						channel.sendMessage('Channel name is already ' + name + "!");
+						channel.sendMessage('Channel name is already "' + name + '"!');
 					else {
 						match.setName(name);
 						channel.sendMessage(
