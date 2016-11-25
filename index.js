@@ -22,9 +22,7 @@ bot.on('message', msg => {
 	if(!input.startsWith(prefix)) return;
 	if(sender.bot) return;
 
-	if (input.startsWith(prefix + 'rename')) {				
-		input = input.replace(prefix + 'rename', '').trim(); //trim away command
-
+	if (input.startsWith(prefix + 'rename')) {	
 		let quotePattern = /".*?"/,
 		validCharacterPattern = /^[a-zA-Z0-9_-]+$/;
 		
@@ -33,11 +31,13 @@ bot.on('message', msg => {
 			try {
 				let query = (quotePattern.exec(input))[0].replace(/"/g,''),			
 				match = bot.channels.find('name', query); //find and store corresponding channel
-				input = input.substring(query.length+2); //trim away first argument			
+				//trim away first argument and any leading text
+				input = input.substring(input.indexOf(query) + query.length + 2); 
 
 				//check for second argument
 				if (quotePattern.test(input)) {
 					let name = (quotePattern.exec(input))[0].replace(/"/g,'');
+					
 					//check to make sure desired name fits discord's naming criteria
 					if (name.length < 2 || name.length > 100) 
 						channel.sendMessage('Channel names must be between 2-100 characters long.'); 
