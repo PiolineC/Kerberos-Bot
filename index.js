@@ -1,24 +1,24 @@
-// import the discord.js module
-const Discord = require('discord.js');
+'use strict';
 //create instance of a Discord Client 
-const bot = new Discord.Client();
-//bot token
-const token = '';
+const Discord = require('discord.js'),
+bot = new Discord.Client();
+
+//import settings from config.json
+let config = require('./init-config.js').initConfig();
 
 bot.on('ready', () => {
 	console.log('I am ready!');
 });
 
 bot.on('message', msg => {
-	let prefix = '>',
+	let prefix = config.command_prefix,
 	input = msg.content,
 	sender = msg.author,
 	channel = msg.channel;
-
-	/* 
-		Exit and stop if message doesn't start with prefix
-		or if the message sender is another bot.
-	*/
+	 
+	//Exit and stop if message doesn't start with prefix
+	//or if the message sender is another bot.
+	
 	if(!input.startsWith(prefix)) return;
 	if(sender.bot) return;
 
@@ -65,4 +65,9 @@ bot.on('message', msg => {
 	} 
 });
 
-bot.login(token);
+if (config.token)
+	bot.login(config.token);
+else {
+	console.log('Discord bot login token required to proceed. Please include one in your config.json.')
+	process.exitCode = 1;
+}
