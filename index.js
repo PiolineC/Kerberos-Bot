@@ -4,20 +4,20 @@ const Discord = require('discord.js'),
 bot = new Discord.Client();
 
 //import settings from config.json
-let Config = require('./init-config.js').init();
+const config = require('./init-config.js').init();
 
 //initialize command modules
-let commands = 
+const commands = 
 	{
 		rename: require('./rename.js').process
 	};
 
 bot.on('ready', () => {
-	console.log('I am ready!');
+	console.log('Ready!');
 });
 
 bot.on('message', msg => {
-	let prefix = Config.command_prefix,	
+	const prefix = config.command_prefix,	
 	input = msg.content,
 	sender = msg.author,
 	channel = msg.channel;
@@ -27,13 +27,13 @@ bot.on('message', msg => {
 	if(!input.startsWith(prefix)) return;
 	if(sender.bot) return;
 
-	if (input.startsWith(prefix + 'rename')) {	
+	if (input.startsWith(prefix + 'rename') || input.startsWith(prefix + 'rn')) {	
 		commands.rename(bot, channel, input);	
 	} 
 });
 
-if (Config.token)
-	bot.login(Config.token);
+if (config.token)
+	bot.login(config.token);
 else {
 	console.log(
 		'Discord bot login token required to proceed. Please include one in your config.json.')
