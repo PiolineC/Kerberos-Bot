@@ -2,7 +2,7 @@
 const fs = require('fs');
 
 module.exports = {
-	initConfig: function() {		
+	init: function() {		
 		let config = {};
 		try { config = require('./config.json'); } 
 
