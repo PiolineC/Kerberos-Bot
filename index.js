@@ -10,6 +10,7 @@ const prefix = config.command_prefix;
 //initialize command modules
 const commands = 
 	{
+		ping: require('./ping.js').process,
 		rename: require('./rename.js').process
 	};
 
@@ -29,6 +30,11 @@ bot.on('message', msg => {
 		commands.rename(input, server.channels)
 		.then(output => { channel.sendMessage(output) })
 		.catch(err => { channel.sendMessage(err); });	
+	}
+
+	else if (input.startsWith(prefix + 'ping')) {
+		commands.ping()
+			.then(output => { channel.sendMessage(output); })
 	} 
 });
 
