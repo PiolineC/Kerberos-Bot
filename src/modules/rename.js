@@ -7,12 +7,11 @@ Bot *must* have "Manage Channels" permission.
 Useful if you'd like memebers of your 
 server to be able to edit channel names
 without giving them access to the other 
-permissions attached to managing channels.
+permissions attached to "Manage Channels".
 
 */
 
 'use strict';
-
 const Promise = require('bluebird');
 
 const quotePattern = /"(.*?)"/g; 

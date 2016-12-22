@@ -4,19 +4,20 @@ const Discord = require('discord.js');
 const bot = new Discord.Client();
 
 //import settings from config.json
-const config = require('./init-config.js').init();
+const config = require('./src/core/config/init-config.js').init();
 const prefix = config.command_prefix;
 
 //initialize command modules
 const commands = 
 	{
-		ping: require('./ping.js').process,
-		rename: require('./rename.js').process
+		ping: require('./src/modules/ping.js').process,
+		rename: require('./src/modules/rename.js').process
 	};
 
-bot.on('ready', () => { console.log('Ready!'); });
+bot.on('ready', () => console.log('Ready!'));
 
 bot.on('message', msg => {
+	//store message data for quick access
 	const input = msg.content;
 	const sender = msg.author;
 	const server = msg.guild;
@@ -28,13 +29,13 @@ bot.on('message', msg => {
 
 	if (input.startsWith(prefix + 'rename') || input.startsWith(prefix + 'rn')) {
 		commands.rename(input, server.channels)
-		.then(output => { channel.sendMessage(output) })
-		.catch(err => { channel.sendMessage(err); });	
+			.then(output => channel.sendMessage(output))
+			.catch(err => channel.sendMessage(err));	
 	}
 
 	else if (input.startsWith(prefix + 'ping')) {
 		commands.ping()
-			.then(output => { channel.sendMessage(output); })
+			.then(output => channel.sendMessage(output));
 	} 
 });
 

@@ -6,16 +6,15 @@ in a timely manner.
 
 */
 
-'use strict'
-
+'use strict';
 const Promise = require('bluebird');
 
 function ping() {
 	const start = process.hrtime();
 	return Promise.resolve('Pong!')
-		.then((output) => { 
+		.then(output => { 
 			const time = process.hrtime(start); 
-			return output + ` Took ${time[0] + time[1]/1e9} seconds.`;
+			return output + `\nTook ${time[0]*1e3 + time[1]/1e6} ms`;
 		});
 }
 

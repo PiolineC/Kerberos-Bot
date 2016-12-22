@@ -4,7 +4,7 @@ const fs = require('fs');
 module.exports = {
 	init: function() {		
 		let config = {};
-		try { config = require('./config.json'); } 
+		try { config = require('../../../config.json'); } 
 
 		catch (err) {					
 			try {
@@ -16,18 +16,19 @@ module.exports = {
 
 			} catch (err) { 
 				//generate a new config file if one does not exist
-				if (err.code === 'ENOENT') { 
-					console.log('Initializing "config.json"...');
-					config.token = '';
-					config.command_prefix = '>';
-					fs.writeFile("./config.json", JSON.stringify(config, null, 2));
+				// if (err.code === 'ENOENT') { 
+				// 	console.log('Initializing "config.json"...');
+				// 	config.token = '';
+				// 	config.command_prefix = '>';
+				// 	fs.writeFile("./config.json", JSON.stringify(config, null, 2));
+				console.log('WARNING: File "config.json" not found.');
 
 				//otherwise rethrow the error
 				} else { throw err; }
 			}
 		}
 
-		//initialize defaults if config exists but does not contain necessary values
+		//initialize defaults where applicable
 		if(!config.hasOwnProperty('token'))
 			config.token = '';
 
