@@ -1,27 +1,26 @@
 'use strict';
 const fs = require('fs');
 
-module.exports = {
-	init: function() {		
-		let config = {};
-		try { config = require('../../../config.json'); } 
+let config = {};
+const configPath = '../config.json';
 
+module.exports = {
+	init: function() {	
+		try { config = require(configPath); } 
 		catch (err) {					
 			try {
 				//logs if there was an error parsing file
-				if (fs.statSync("./config.json").isFile()) {
+				if (fs.statSync(configPath).isFile()) {
 					console.log('WARNING: File "config.json" found but could not be parsed.');
 					throw err;
 				}
-
 			} catch (err) { 
 				//generate a new config file if one does not exist
-				// if (err.code === 'ENOENT') { 
-				// 	console.log('Initializing "config.json"...');
-				// 	config.token = '';
-				// 	config.command_prefix = '>';
-				// 	fs.writeFile("./config.json", JSON.stringify(config, null, 2));
-				console.log('WARNING: File "config.json" not found.');
+				if (err.code === 'ENOENT') { 
+					console.log('Initializing "config.json"...');
+					config.token = '';
+					config.command_prefix = '>';
+					fs.writeFile(configPath, JSON.stringify(config, null, 2));
 
 				//otherwise rethrow the error
 				} else { throw err; }
