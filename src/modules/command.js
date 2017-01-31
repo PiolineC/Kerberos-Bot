@@ -1,19 +1,20 @@
 const Promise = require('bluebird');
 
 class Command {
-    constructor() {
-        this.name = 'command';
-        this.description = 'command description';
-        this.usage = 'command';
-        this.args = '[arg1] ([arg2]...)';
+    constructor(options) {
+        this.name = '';
+        this.description = '';
+        this.usage = '';
+        this.help = '';
+        this.options = options;
     }   
 
-    process(msgObj, args) {
+    execute(msg, args) {
         return Promise.reject();
     }
 
-    validate(cmd) {
-        return true;
+    trigger(cmd) {
+        return false;
     }
 }
 

@@ -13,7 +13,7 @@ permissions attached to "Manage Channels".
 
 'use strict';
 const Promise = require('bluebird');
-const Command = require('../Command.js');
+const Command = require('../command.js');
 
 const quotePattern = /"(.*?)"/g; 
 const shortcutPattern = /(v|t)\d+/; 
@@ -22,13 +22,13 @@ const validCharacterPattern = /^[a-zA-Z0-9_-]+$/;
 class Rename extends Command {
 	constructor() {
 		super();
-		this.name = 'rename';
-		this.description = 'Change the name of a channel.';
-		this.args = '["from"] ["to"]';
-		
+		this.name = 'rn';
+		this.description = "Changes the name of a channel.";
+		this.usage = '["channel name"] ["name change"]';
+		this.help = `Change the name of a channel. The first argument can either be the current name of the channel or the special syntax [channel type][index]. Channel type is a single letter (v or t) indicating the type of channel you wish to rename. For example, $rn v1 "example" will have the same effect as $rn "voice channel 1 name" "example".`;		
 	}
 
-	process(msg, args) {
+	execute(msg, args) {
 		let name, oldName;
 		return this.parseArgs(args)
 			.then(args => {
@@ -44,8 +44,8 @@ class Rename extends Command {
 			.catch(err => Promise.reject(err));
 	}
 
-	validate(cmd) {
-		return cmd === 'rename' || cmd === 'rn';
+	trigger(cmd) {
+		return cmd === 'rn' || cmd === 'rename';
 	}
 
 	//searches an input for two arguments

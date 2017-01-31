@@ -4,14 +4,16 @@ const Discord = require('discord.js');
 const bot = new Discord.Client();
 
 //import settings from config.json
-const config = require('./src/init-config.js').init();
-const prefix = config.command_prefix;
+const config = new (require('./src/core/config/config.js'))('../../../config.json');		
+const loginToken = config.get('token');
+const prefix = config.get('prefix');
 
 //initialize command modules
-//(to do: abstract this)
-const Ping = require('./src/modules/commands/ping.js');
-const Rename = require('./src/modules/commands/rename.js');
-const commands = [new Ping(), new Rename()];
+const CommandFinder = require("./src/core/discovery/command-finder.js");
+const commands = CommandFinder.getCommands(config);
+
+const Help = new (require('./src/modules/commands/help.js'))(prefix, commands);
+const commandList = Help.descriptionText;
 
 bot.on('ready', () => console.log('Ready!'));
 
@@ -28,19 +30,25 @@ bot.on('message', msg => {
 	const cmd = input.split(' ')[0].slice(prefix.length);
 	const args = input.slice(prefix.length+cmd.length).trim();
 
-	for (let c of commands) {
-		if (c.validate(cmd)) {
-			c.process(msg, cmd, args)
+	if (cmd === 'help') {
+		if (Help.generateHelpText(args)) 
+			return channel.sendMessage(Help.generateHelpText(args));
+		return channel.sendMessage(commandList);
+	}
+
+	for (let i of commands) {
+		if (i.trigger(cmd)) {
+			i.execute(msg, args)
 				.then(output => channel.sendMessage(output))
-				.catch(err => channel.sendMessage(err));
+				.catch(err => channel.sendMessage(err + `\nType ${prefix}help for more information on how to use a command.`));
 		}
 	}
 });
 
 //attempt login
-if (config.token)
-	bot.login(config.token);
+if (loginToken)
+	bot.login(loginToken);
 else {
-	console.log('Discord bot login token required to proceed. Please include one in your config.json.');
+	console.error('ERROR: Discord bot login token required to proceed. Please include one in your config.json.');
 	process.exitCode = 1;
 }
