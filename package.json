@@ -1,10 +1,12 @@
 {
   "name": "kerberos-bot",
-  "version": "0.2.1",
-  "description": "discord.js based bot",
+  "version": "0.9.0",
+  "description": "discord.js bot",
   "main": "index.js",
   "dependencies": {
-    "discord.js": "^10.0.1"
+    "bluebird": "^3.4.6",
+    "discord.js": "^10.0.1",
+    "glob": "^7.1.1"
   },
   "devDependencies": {},
   "scripts": {
@@ -14,7 +16,10 @@
     "node": "6.9.1",
     "npm": "3.10.8"
   },
-
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PiolineC/Kerberos-Bot.git"
+  },
   "author": "Pioline",
   "license": "ISC"
 }
