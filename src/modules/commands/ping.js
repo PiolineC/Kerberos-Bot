@@ -6,8 +6,8 @@ the bot to check its status.
 */
 
 'use strict';
-const Promise = require('bluebird');
 const Command = require('../command.js');
+const Promise = require('bluebird');
 
 class Ping extends Command {
 	constructor() {

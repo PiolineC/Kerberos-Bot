@@ -39,16 +39,11 @@ bot.on('message', msg => {
 	for (let i of commandMap.values()) {
 		if (i.trigger(cmd)) {
 			i.execute(msg, args)
-				.then(output => {
-					if (output)
-						channel.sendMessage(output);
-				})
+				.then(output => { if (output) channel.sendMessage(output); })
 				.catch(err => {
 					let errorMessage = '';
 					if (typeof err === 'string')
 						errorMessage += err;		
-					else if (err.code === 50013) 
-						errorMessage += `I don't have permission to do that.`;
 					else {
 						console.error('WARNING: Unhandled error.', '\n', err);
 						errorMessage += 'Something went wrong.';

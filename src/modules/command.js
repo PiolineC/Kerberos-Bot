@@ -1,3 +1,4 @@
+'use strict'
 const Promise = require('bluebird');
 
 class Command {
@@ -9,7 +10,7 @@ class Command {
         this.options = options;
     }   
 
-    execute(msg, args) {
+    execute(msg, input) {
         return Promise.reject();
     }
 
