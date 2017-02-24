@@ -12,8 +12,8 @@ permissions attached to "Manage Channels".
 */
 
 'use strict';
-const Promise = require('bluebird');
 const Command = require('../command.js');
+const Promise = require('bluebird');
 
 const quotePattern = /"(.*?)"/g; 
 const shortcutPattern = /(v|t)\d+/; 
@@ -25,23 +25,23 @@ class Rename extends Command {
 		this.name = 'rn';
 		this.description = "Changes the name of a channel.";
 		this.usage = '["channel name"] ["name change"]';
-		this.help = `Change the name of a channel. The first argument can either be the current name of the channel or the special syntax [channel type][index]. Channel type is a single letter (v or t) indicating the type of channel you wish to rename. For example, $rn v1 "example" will have the same effect as $rn "voice channel 1 name" "example".`;		
+		this.help = `Change the name of a channel. Channel names must be between 2-100 characters. If the channel is a text channel, the name can only contain alphanumeric characters with dashes and underscores. The first argument can either be the current name of the channel or formatted with the special syntax [channel type][index], where channel type is a single letter (v or t) indicating the type of channel you wish to rename. For example, $rn v1 "example" will have the same effect as $rn "voice channel 1 name" "example".`;		
 	}
 
-	execute(msg, args) {
+	execute(msg, input) {
 		let name, oldName;
-		return this.parseArgs(args)
+		return this.parseArgs(input)
 			.then(args => {
 				name = args.name;
 				return this.findMatch(args.query, msg.guild.channels);
 			})
-			.then(match => this.checkName(name, match))
-			.then(match => { 
-				oldName = match.name;
-				return match.setName(name);				
+			.then(channel => this.validateName(name, channel))
+			.then(channel => { 
+				oldName = channel.name;
+				return channel.setName(name)
+					.catch(err => Promise.reject("Naming operation failed."));				
 			})	
-			.then(channel => Promise.resolve(`Channel "${oldName}" successfully renamed to "${channel.name}"!`))
-			.catch(err => Promise.reject(err));
+			.then(channel => `Channel "${oldName}" successfully renamed to "${channel.name}"!`);
 	}
 
 	trigger(cmd) {
@@ -51,6 +51,7 @@ class Rename extends Command {
 	//searches an input for two arguments
 	parseArgs(input) {	
 		let args = input.match(quotePattern) || [];
+		args = args.map(match => match.replace(/"/g,''));
 		const shortcut = input.replace(quotePattern, '').match(shortcutPattern);
 
 		if (shortcut && args.length < 2) {
@@ -61,37 +62,29 @@ class Rename extends Command {
 			});		
 		}
 
-		if (args.length === 0)  
+		if (args.length < 2)  
 			return Promise.reject('Please input the channel you wish to rename and your desired name change.');
-		else if (args.length === 1) 
-			return Promise.reject('Please input your desired name change.');
-		else {
-			const query = args[0].shortcut ? args[0] : args[0].replace(/"/g,'');
-			const name = args[1].replace(/"/g,'');		
-			return Promise.resolve({ query: query, name: name });
-		}
-	}
-
-	//checks to see if desired name change adheres to Discord's naming criteria
-	checkName(name, channel) {	
-		if (name.length < 2 || name.length > 100) 
-			return Promise.reject('Channel names must be between 2-100 characters long.');
-		else if (name === channel.name) 
-			return Promise.reject(`Channel name is already "${name}"!`);
-		else if (channel.type === 'text' && !validCharacterPattern.test(name))
-			return Promise.reject('Text channel names must be alphanumeric with dashes or underscores.'); 
-		else 
-			return Promise.resolve(channel);
+		return Promise.resolve({ query: args[0], name: args[1] });
 	}
 
 	//searches server for a channel matching the provided query 
 	findMatch(query, channels) {
 		let match;
-		if (query.shortcut)
-			match = channels.find(channel => channel.type === query.type && channel.position === query.index);
-		else
-			match = channels.find('name', query);
-		return match ? Promise.resolve(match) : Promise.reject('Channel' + (query.shortcut ? '' : ` "${query}"`) + ' not found.');	
+		if (query.shortcut) 
+			match = channels.filterArray(channel => channel.type === query.type)[query.index];		
+		else match = channels.find('name', query);
+		return match || Promise.reject('Channel' + (query.shortcut ? '' : ` "${query}"`) + ' not found.');	
+	}
+	
+	//checks to see if desired name change adheres to Discord's naming criteria
+	validateName(name, channel) {	
+		if (name.length < 2 || name.length > 100) 
+			return Promise.reject('Channel names must be between 2-100 characters long.');
+		else if (name === channel.name) 
+			return Promise.reject(`Channel name is already "${name}"!`);
+		else if (channel.type === 'text' && !validCharacterPattern.test(name))
+			return Promise.reject('Text channel names must be alphanumeric with dashes or underscores.');  
+		return channel;
 	}
 }
 
