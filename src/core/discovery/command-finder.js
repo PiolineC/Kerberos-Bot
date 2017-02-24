@@ -1,6 +1,6 @@
 'use strict'
-const glob = require('glob');
 const Command = require('../../modules/command.js');
+const glob = require('glob');
 
 class CommandFinder {
     constructor() {
@@ -8,10 +8,14 @@ class CommandFinder {
     }
 
     static getCommands(options) {
-        return glob.sync('../../modules/commands/*.js', { cwd: __dirname })
+        return new Map(glob.sync('../../modules/commands/*.js', { cwd: __dirname })
             .map(path => require(path))
             .filter(mod => mod.prototype instanceof Command)
-            .map(cmd => new cmd(options));
+            .map(cmd => {
+                const instance = new cmd(options);
+                return [instance.name, instance];
+            })
+        );
     }
 }
 

@@ -10,9 +10,9 @@ const prefix = config.get('prefix');
 
 //initialize command modules
 const CommandFinder = require("./src/core/discovery/command-finder.js");
-const commands = CommandFinder.getCommands(config);
+const commandMap = CommandFinder.getCommands(config);
 
-const Help = new (require('./src/modules/commands/help.js'))(prefix, commands);
+const Help = new (require('./src/modules/commands/help.js'))(prefix, commandMap);
 const commandList = Help.descriptionText;
 
 bot.on('ready', () => console.log('Ready!'));
@@ -36,11 +36,25 @@ bot.on('message', msg => {
 		return channel.sendMessage(commandList);
 	}
 
-	for (let i of commands) {
+	for (let i of commandMap.values()) {
 		if (i.trigger(cmd)) {
 			i.execute(msg, args)
-				.then(output => channel.sendMessage(output))
-				.catch(err => channel.sendMessage(err + `\nType ${prefix}help for more information on how to use a command.`));
+				.then(output => {
+					if (output)
+						channel.sendMessage(output);
+				})
+				.catch(err => {
+					let errorMessage = '';
+					if (typeof err === 'string')
+						errorMessage += err;		
+					else if (err.code === 50013) 
+						errorMessage += `I don't have permission to do that.`;
+					else {
+						console.error('WARNING: Unhandled error.', '\n', err);
+						errorMessage += 'Something went wrong.';
+					}					
+					channel.sendMessage(errorMessage + `\nType "${prefix}help ${i.name}" for more information on how to use this command.`);
+				});
 		}
 	}
 });

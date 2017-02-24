@@ -3,14 +3,12 @@ const Promise = require('bluebird');
 
 class Help {
     constructor(prefix, commands) {
-        this.commandMap = new Map();
+        this.commandMap = commands;
         this.prefix = prefix;
         this.descriptionText = `Type ${this.prefix}help [command] to see advanced help text.\n\n`;                
 
-        for (let cmd of commands) {
-            this.commandMap.set(cmd.name, { cmd: cmd, desc: cmd.description, help: cmd.help });
+        for (let cmd of commands.values()) 
             this.descriptionText += this.generateDescription(cmd);
-        }
     }
 
     generateDescription(cmd) {
@@ -18,11 +16,9 @@ class Help {
     }
 
     generateHelpText(cmdName) {
-        const info = this.commandMap.get(cmdName);
-        if (!info)
-            return '';
-        const cmd = info.cmd;
-        return info.help ? `\`${this.prefix}${cmd.name}\` ${cmd.usage ? `\`${cmd.usage}\`` : ''}\n\t${Help.splitText(info.help.replace(/\$/g, this.prefix), 50, '\n\t')}` : this.generateDescription(info.cmd);
+        const cmd = this.commandMap.get(cmdName);
+        if (!cmd) return '';
+        return cmd.help ? `\`${this.prefix}${cmd.name}\` ${cmd.usage ? `\`${cmd.usage}\`` : ''}\n\t${Help.splitText(cmd.help.replace(/\$/g, this.prefix), 50, '\n\t')}` : this.generateDescription(cmd);
     }
 
     static splitText(str, len, splitter) {
